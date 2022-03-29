@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:yulnfc/yulnfc.dart';
+import 'package:yulnfc/yulnfc.dart' as YulNfc;
 
 void main() {
   runApp(const MyApp());
@@ -22,6 +22,20 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    YulNfc.supportNfc.then((support) {
+      if (support) {
+        print("设备支持nfc");
+      } else {
+        print("设备不支持nfc");
+      }
+    });
+    YulNfc.enableNfc.then((enable) {
+      if (enable) {
+        print("设备nfc可用");
+      } else {
+        print("设备nfc不可用");
+      }
+    });
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -30,8 +44,7 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion =
-          await Yulnfc.platformVersion ?? 'Unknown platform version';
+      platformVersion = 'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -48,13 +61,23 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    var nfcText="";
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Text('Running on: $nfcText\n'),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: (){
+            YulNfc.startNfcSearch(0, 0).then((result){
+               setState(() {
+                  nfcText=result??"读取失败.";
+               });
+            });
+          },
         ),
       ),
     );

@@ -1,6 +1,6 @@
 # yulnfc
 
-A new Flutter project.
+A reader supporting Android mifareclassic card.
 
 ## Getting Started
 

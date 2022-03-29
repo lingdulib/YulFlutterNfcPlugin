@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:yulnfc/yulnfc.dart';
+import 'package:yulnfc/yulnfcImpl.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('yulnfc');
@@ -17,7 +17,4 @@ void main() {
     channel.setMockMethodCallHandler(null);
   });
 
-  test('getPlatformVersion', () async {
-    expect(await Yulnfc.platformVersion, '42');
-  });
 }
