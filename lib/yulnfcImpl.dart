@@ -39,3 +39,5 @@ import 'package:flutter/services.dart';
   Future stopNfcSearch() async {
     await _channel.invokeMethod("stopNfcCard");
   }
+
+
