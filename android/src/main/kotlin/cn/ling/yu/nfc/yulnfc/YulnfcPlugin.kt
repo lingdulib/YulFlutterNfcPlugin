@@ -64,6 +64,9 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     }
                     tag.techList.forEach { tech ->
                         if (TextUtils.equals(tech, MifareClassic::javaClass.name)) {
+                            mActivityPluginBinding.activity.runOnUiThread {
+                                Toast.makeText(mActivityPluginBinding.activity,"m1card",Toast.LENGTH_LONG).show()
+                            }
                             val mfc = MifareClassic.get(tag)
                             mfc.connect()
                             try {
