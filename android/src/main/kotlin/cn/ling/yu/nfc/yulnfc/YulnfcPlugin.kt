@@ -62,12 +62,10 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     mActivityPluginBinding.activity.runOnUiThread {
                         Toast.makeText(mActivityPluginBinding.activity,"uid====>$uid,size->${tag.techList.size}",Toast.LENGTH_LONG).show()
                     }
-                    result.success(NfcDataInfoBean(
-                        code = SUCCESS,
-                        content = tag.techList.toString(),
-                        uid = uid
-                    ))
                     tag.techList.forEach { tech ->
+                        mActivityPluginBinding.activity.runOnUiThread {
+                            Toast.makeText(mActivityPluginBinding.activity,"name==>$tech,m1 className===>${MifareClassic::javaClass.name}",Toast.LENGTH_LONG).show()
+                        }
                         if (TextUtils.equals(tech, MifareClassic::javaClass.name)) {
                             mActivityPluginBinding.activity.runOnUiThread {
                                 Toast.makeText(mActivityPluginBinding.activity,"m1card",Toast.LENGTH_LONG).show()
