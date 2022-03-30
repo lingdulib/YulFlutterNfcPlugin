@@ -56,12 +56,9 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "readNfcCard" -> {//读取某扇区内容
                 val requestParamters = call.arguments as Map<*, *>
                 NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
-                    val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
+                    val uid = ByteUtil.bytes2HexString(tag.id)
                     tag.techList.forEach { tech ->
                         if (TextUtils.equals(tech, MifareClassic::class.java.name)) {
-                            mActivityPluginBinding.activity.runOnUiThread {
-                                Toast.makeText(mActivityPluginBinding.activity,"m1card",Toast.LENGTH_LONG).show()
-                            }
                             val mfc = MifareClassic.get(tag)
                             mfc.connect()
                             try {
@@ -69,7 +66,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                 if (sectorCount > 0) {
                                     if (mfc.authenticateSectorWithKeyA(
                                             requestParamters["sectorIndex"] as Int,
-                                            ByteToConvertStringUtils.hexStringToBytes(
+                                            ByteUtil.hexString2Bytes(
                                                 requestParamters["sectorPwd"] as String
                                             )
                                         )
@@ -79,10 +76,8 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                         if (blockIndex >= 0) {
                                             val blockData = mfc.readBlock(blockIndex)
                                             val blockDataHex =
-                                                ByteToConvertStringUtils.bytesToHexString(
-                                                    blockData,
-                                                    blockData.size
-                                                )
+                                                ByteUtil.bytes2HexString(
+                                                    blockData)
                                             mfc.close()
                                             handler.postDelayed({
                                                 result.success(
