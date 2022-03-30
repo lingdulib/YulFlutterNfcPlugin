@@ -60,8 +60,13 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
                     Log.e(TAG,"uid====>$uid")
                     mActivityPluginBinding.activity.runOnUiThread {
-                        Toast.makeText(mActivityPluginBinding.activity,"uid====>$uid",Toast.LENGTH_LONG).show()
+                        Toast.makeText(mActivityPluginBinding.activity,"uid====>$uid,size->${tag.techList.size}",Toast.LENGTH_LONG).show()
                     }
+                    result.success(NfcDataInfoBean(
+                        code = SUCCESS,
+                        content = tag.techList.toString(),
+                        uid = uid
+                    ))
                     tag.techList.forEach { tech ->
                         if (TextUtils.equals(tech, MifareClassic::javaClass.name)) {
                             mActivityPluginBinding.activity.runOnUiThread {
