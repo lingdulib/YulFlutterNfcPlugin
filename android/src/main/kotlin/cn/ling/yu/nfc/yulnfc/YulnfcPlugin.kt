@@ -56,7 +56,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "readNfcCard" -> {//读取某扇区内容
                 val requestParamters = call.arguments as Map<*, *>
                 NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
-                    val uid = ByteUtil.bytes2HexString(tag.id)
+                    val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
                     tag.techList.forEach { tech ->
                         if (TextUtils.equals(tech, MifareClassic::class.java.name)) {
                             val mfc = MifareClassic.get(tag)
@@ -66,18 +66,26 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                 if (sectorCount > 0) {
                                     if (mfc.authenticateSectorWithKeyA(
                                             requestParamters["sectorIndex"] as Int,
-                                            ByteUtil.hexString2Bytes(
+                                            ByteToConvertStringUtils.hexStringToBytes(
                                                 requestParamters["sectorPwd"] as String
                                             )
                                         )
                                     ) {
+                                        mActivityPluginBinding.activity.runOnUiThread {
+                                            Toast.makeText(mActivityPluginBinding.activity,"验证成功",Toast.LENGTH_LONG).show()
+                                        }
                                         val blockIndex =
                                             mfc.sectorToBlock(requestParamters["blockIndex"] as Int)
                                         if (blockIndex >= 0) {
                                             val blockData = mfc.readBlock(blockIndex)
                                             val blockDataHex =
-                                                ByteUtil.bytes2HexString(
-                                                    blockData)
+                                                ByteToConvertStringUtils.bytesToHexString(
+                                                    blockData,
+                                                    blockData.size
+                                                )
+                                            mActivityPluginBinding.activity.runOnUiThread {
+                                                Toast.makeText(mActivityPluginBinding.activity,"block_content==>$blockDataHex",Toast.LENGTH_LONG).show()
+                                            }
                                             mfc.close()
                                             handler.postDelayed({
                                                 result.success(
