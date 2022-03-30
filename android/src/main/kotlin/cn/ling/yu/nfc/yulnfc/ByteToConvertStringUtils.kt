@@ -1,5 +1,6 @@
 package cn.ling.yu.nfc.yulnfc
 
+import android.text.TextUtils
 import java.util.*
 import kotlin.experimental.and
 
@@ -45,10 +46,26 @@ object ByteToConvertStringUtils {
         val d = ByteArray(length)
         for (i in 0 until length) {
             val pos = i * 2
-            d[i] = (charToByte(hexChars[pos]).toInt() shl 4 or charToByte(hexChars[pos + 1]).toInt()).toByte()
+            d[i] =
+                (charToByte(hexChars[pos]).toInt() shl 4 or charToByte(hexChars[pos + 1]).toInt()).toByte()
         }
 
         return d
+    }
+
+    fun convertStringTo16Bytes(content: String?): ByteArray? {
+        if (TextUtils.isEmpty(content)) {
+            return null
+        }
+        var bytes: ByteArray = hexStringToBytes(content)!!
+        if (bytes.size != 16) {
+            val temp = ByteArray(16)
+            for (i in temp.indices) {
+                temp[i] = if (bytes.size > i) bytes[i] else -1
+            }
+            bytes = temp
+        }
+        return bytes;
     }
 
     private fun charToByte(c: Char): Byte {

@@ -5,6 +5,8 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import cn.ling.yu.nfc.yulnfc.bean.NfcDataInfoBean
@@ -24,6 +26,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var channel: MethodChannel
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var mActivityPluginBinding: ActivityPluginBinding
+    private val TAG=YulnfcPlugin::javaClass.name
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "yulnfc")
@@ -52,8 +55,13 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
             "readNfcCard" -> {//读取某扇区内容
                 val requestParamters = call.arguments as Map<*, *>
+                Log.e(TAG,"reqp===>$requestParamters")
                 NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
                     val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
+                    Log.e(TAG,"uid====>$uid")
+                    mActivityPluginBinding.activity.runOnUiThread {
+                        Toast.makeText(mActivityPluginBinding.activity,"uid====>$uid",Toast.LENGTH_LONG).show()
+                    }
                     tag.techList.forEach { tech ->
                         if (TextUtils.equals(tech, MifareClassic::javaClass.name)) {
                             val mfc = MifareClassic.get(tag)
@@ -83,6 +91,81 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                                     NfcDataInfoBean(
                                                         code = SUCCESS,
                                                         content = blockDataHex,
+                                                        uid = uid
+                                                    )
+                                                )
+                                            }, 500)
+                                        } else {
+                                            mfc.close()
+                                            handler.postDelayed({
+                                                result.success(
+                                                    NfcDataInfoBean(
+                                                        code = FAIL,
+                                                        msg = "传入扇区块异常."
+                                                    )
+                                                )
+                                            }, 500)
+                                        }
+                                    } else {
+                                        mfc.close()
+                                        handler.postDelayed({
+                                            result.success(
+                                                NfcDataInfoBean(
+                                                    code = FAIL,
+                                                    msg = "验证扇区密码错误."
+                                                )
+                                            )
+                                        }, 500)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                mfc.close()
+                                handler.postDelayed({
+                                    result.success(
+                                        NfcDataInfoBean(
+                                            code = FAIL,
+                                            msg = "读卡器异常,请重试."
+                                        )
+                                    )
+                                }, 500)
+                            }
+                        }
+                    }
+                }
+            }
+            "writeNfcCard" -> {
+                val requestParamters = call.arguments as Map<*, *>
+                NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
+                    val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
+                    tag.techList.forEach { tech ->
+                        if (TextUtils.equals(tech, MifareClassic::javaClass.name)) {
+                            val mfc = MifareClassic.get(tag)
+                            mfc.connect()
+                            try {
+                                val sectorCount = mfc.sectorCount
+                                if (sectorCount > 0) {
+                                    if (mfc.authenticateSectorWithKeyA(
+                                            requestParamters["sectorIndex"] as Int,
+                                            ByteToConvertStringUtils.hexStringToBytes(
+                                                requestParamters["sectorPwd"] as String
+                                            )
+                                        )
+                                    ) {
+                                        val blockIndex =
+                                            mfc.sectorToBlock(requestParamters["blockIndex"] as Int)
+                                        if (blockIndex >= 0) {
+                                            mfc.writeBlock(
+                                                blockIndex,
+                                                ByteToConvertStringUtils.convertStringTo16Bytes(
+                                                    requestParamters["writeContent"] as String?
+                                                )
+                                            )
+                                            mfc.close()
+                                            handler.postDelayed({
+                                                result.success(
+                                                    NfcDataInfoBean(
+                                                        code = SUCCESS,
+                                                        content = requestParamters["writeContent"] as String?,
                                                         uid = uid
                                                     )
                                                 )

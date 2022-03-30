@@ -9,8 +9,6 @@ import com.google.gson.GsonBuilder
  * @email 237881235@qq.com
  */
 data class NfcDataInfoBean(
-    val support: Boolean = false,//设备是否支持nfc
-    val enable: Boolean = false,//nfc设备是否启用
     val uid: String? = null,//设备uid
     val content: String? = null,//设备内容
     val code: String? = null,//错误码
