@@ -1,6 +1,5 @@
 package cn.ling.yu.nfc.yulnfc.bean
 
-import com.google.gson.GsonBuilder
 
 
 /**
@@ -14,8 +13,12 @@ data class NfcDataInfoBean(
     val code: String? = null,//错误码
     val msg: String? = null//错误信息
 ) {
-    private val mGson = GsonBuilder().disableHtmlEscaping().serializeNulls().create()
     override fun toString(): String {
-        return mGson.toJson(this)
+        return mapOf(
+            "uid" to this.uid,
+            "content" to this.content,
+            "code" to this.code,
+            "msg" to this.msg
+        ).toString()
     }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yulnfc/yulnfc.dart' as yulnfc;
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -13,7 +14,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
+  var nfcText="";
   @override
   void initState() {
     super.initState();
@@ -35,7 +36,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    var nfcText="";
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(

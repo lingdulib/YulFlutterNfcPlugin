@@ -5,8 +5,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
-import android.util.Log
-import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import cn.ling.yu.nfc.yulnfc.bean.NfcDataInfoBean
@@ -26,7 +24,6 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var channel: MethodChannel
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var mActivityPluginBinding: ActivityPluginBinding
-    private val TAG=YulnfcPlugin::javaClass.name
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "yulnfc")
@@ -71,9 +68,6 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                             )
                                         )
                                     ) {
-                                        mActivityPluginBinding.activity.runOnUiThread {
-                                            Toast.makeText(mActivityPluginBinding.activity,"验证成功",Toast.LENGTH_LONG).show()
-                                        }
                                         val blockIndex =
                                             mfc.sectorToBlock(requestParamters["blockIndex"] as Int)
                                         if (blockIndex >= 0) {
@@ -83,9 +77,6 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                                     blockData,
                                                     blockData.size
                                                 )
-                                            mActivityPluginBinding.activity.runOnUiThread {
-                                                Toast.makeText(mActivityPluginBinding.activity,"block_content==>$blockDataHex",Toast.LENGTH_LONG).show()
-                                            }
                                             mfc.close()
                                             handler.postDelayed({
                                                 result.success(
