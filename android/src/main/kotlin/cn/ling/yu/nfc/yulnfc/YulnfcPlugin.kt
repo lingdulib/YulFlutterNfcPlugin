@@ -55,18 +55,10 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
             "readNfcCard" -> {//读取某扇区内容
                 val requestParamters = call.arguments as Map<*, *>
-                Log.e(TAG,"reqp===>$requestParamters")
                 NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
                     val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
-                    Log.e(TAG,"uid====>$uid")
-                    mActivityPluginBinding.activity.runOnUiThread {
-                        Toast.makeText(mActivityPluginBinding.activity,"uid====>$uid,size->${tag.techList.size}",Toast.LENGTH_LONG).show()
-                    }
                     tag.techList.forEach { tech ->
-                        mActivityPluginBinding.activity.runOnUiThread {
-                            Toast.makeText(mActivityPluginBinding.activity,"name==>$tech,m1 className===>${MifareClassic::javaClass.name}",Toast.LENGTH_LONG).show()
-                        }
-                        if (TextUtils.equals(tech, MifareClassic::javaClass.name)) {
+                        if (TextUtils.equals(tech, MifareClassic::class.java.name)) {
                             mActivityPluginBinding.activity.runOnUiThread {
                                 Toast.makeText(mActivityPluginBinding.activity,"m1card",Toast.LENGTH_LONG).show()
                             }
@@ -144,7 +136,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
                     val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
                     tag.techList.forEach { tech ->
-                        if (TextUtils.equals(tech, MifareClassic::javaClass.name)) {
+                        if (TextUtils.equals(tech, MifareClassic::class.java.name)) {
                             val mfc = MifareClassic.get(tag)
                             mfc.connect()
                             try {
