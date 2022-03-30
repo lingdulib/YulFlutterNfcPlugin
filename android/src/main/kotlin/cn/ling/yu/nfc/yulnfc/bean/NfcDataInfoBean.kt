@@ -1,5 +1,6 @@
 package cn.ling.yu.nfc.yulnfc.bean
 
+import org.json.JSONObject
 
 
 /**
@@ -14,11 +15,13 @@ data class NfcDataInfoBean(
     val msg: String? = null//错误信息
 ) {
     override fun toString(): String {
-        return mapOf(
-            "uid" to this.uid,
-            "content" to this.content,
-            "code" to this.code,
-            "msg" to this.msg
-        ).toString()
+        val jsonObject=JSONObject()
+        jsonObject.apply {
+            putOpt("uid",uid)
+            putOpt("content",content)
+            putOpt("code",code)
+            putOpt("msg",msg)
+        }
+        return jsonObject.toString()
     }
 }

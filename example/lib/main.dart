@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yulnfc/yulnfc.dart' as yulnfc;
+import 'dart:convert';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +15,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var nfcText="";
+  var nfcText = "";
+
   @override
   void initState() {
     super.initState();
@@ -42,17 +44,50 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Nfc m1卡读写插件'),
         ),
         body: Center(
-          child: Text('Running on: $nfcText\n'),
+          child: Column(
+            children: [
+              ...[
+                const SizedBox(
+                  height: 45.0,
+                ),
+                Text('Running on: $nfcText\n'),
+                TextButton(
+                    onPressed: () => yulnfc.openNfcSetting,
+                    child: const Text("打开NFC设置")),
+                TextButton(
+                    onPressed: () {
+                      yulnfc
+                          .startWriteNfcSearch(0, 3, "1234567890")
+                          .then((result) {
+                        setState(() {
+                          nfcText = "写入成功,成功返回的内容=>$result";
+                        });
+                      });
+                    },
+                    child: const Text("写卡")),
+                TextButton(onPressed: (){
+
+                }, child:const Text("写值+10")),
+                TextButton(onPressed: (){},child: const Text("减值-10"),)
+              ]
+            ],
+          ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: (){
-            yulnfc.startNfcSearch(0, 0).then((result){
-               setState(() {
-                  nfcText=result??"读取失败.";
-               });
+          onPressed: () {
+            yulnfc.startReadNfcSearch(0, 0).then((result) {
+              setState(() {
+                nfcText = result ?? "读取失败.";
+                print(nfcText);
+                Map<String, dynamic> map = jsonDecode(nfcText);
+                print("map1====>${map["uid"]}");
+                print("map2====>${map["code"]}");
+                print("map3====>${map["msg"]}");
+                print("map4====>${map["content"]}");
+              });
             });
           },
-          child:const Icon(Icons.nfc),
+          child: const Icon(Icons.nfc),
         ),
       ),
     );

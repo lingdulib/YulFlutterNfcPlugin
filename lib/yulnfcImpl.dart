@@ -25,7 +25,7 @@ Future<bool> get openNfcSetting async {
 }
 
 /// 读取扇区内容
-Future<String?> startNfcSearch(int sectorIndx, int blockIndex,
+Future<String?> startReadNfcSearch(int sectorIndx, int blockIndex,
     {String nfcPwd = "FFFFFFFFFFFF"}) async {
   final String readResult = await _channel.invokeMethod("readNfcCard", {
     "sectorIndex": sectorIndx,
@@ -36,8 +36,8 @@ Future<String?> startNfcSearch(int sectorIndx, int blockIndex,
 }
 
 /// 写入扇区内容
-Future<String?> startWriteNfcSearch(int sectorIndx, int blockIndex,
-    {String nfcPwd = "FFFFFFFFFFFF", String? writeContent}) async {
+Future<String?> startWriteNfcSearch(int sectorIndx, int blockIndex,String writeContent,
+    {String nfcPwd = "FFFFFFFFFFFF"}) async {
   final String writeResult = await _channel.invokeMethod("writeNfcCard", {
     "sectorIndex": sectorIndx,
     "blockIndex": blockIndex,
@@ -46,6 +46,7 @@ Future<String?> startWriteNfcSearch(int sectorIndx, int blockIndex,
   });
   return writeResult;
 }
+
 
 /// 停止寻卡
 Future stopNfcSearch() async {

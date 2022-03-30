@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import android.util.Log
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import cn.ling.yu.nfc.yulnfc.bean.NfcDataInfoBean
@@ -68,9 +69,9 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                             )
                                         )
                                     ) {
-                                        val blockIndex =
-                                            mfc.sectorToBlock(requestParamters["blockIndex"] as Int)
-                                        if (blockIndex >= 0) {
+                                        val blockIndex =requestParamters["blockIndex"] as Int
+                                        val blockSize=mfc.blockCount
+                                        if (blockIndex in 0 until blockSize) {
                                             val blockData = mfc.readBlock(blockIndex)
                                             val blockDataHex =
                                                 ByteToConvertStringUtils.bytesToHexString(
@@ -127,6 +128,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
             "writeNfcCard" -> {
                 val requestParamters = call.arguments as Map<*, *>
+                Log.e("YulnfcPlugin","$requestParamters")
                 NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
                     val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
                     tag.techList.forEach { tech ->
@@ -143,9 +145,9 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                             )
                                         )
                                     ) {
-                                        val blockIndex =
-                                            mfc.sectorToBlock(requestParamters["blockIndex"] as Int)
-                                        if (blockIndex >= 0) {
+                                        val blockIndex =requestParamters["blockIndex"] as Int
+                                        val blockSize=mfc.blockCount
+                                        if (blockIndex in 0 until blockSize) {
                                             mfc.writeBlock(
                                                 blockIndex,
                                                 ByteToConvertStringUtils.convertStringTo16Bytes(
@@ -159,7 +161,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                                         code = SUCCESS,
                                                         content = requestParamters["writeContent"] as String?,
                                                         uid = uid
-                                                    )
+                                                    ).toString()
                                                 )
                                             }, 500)
                                         } else {
@@ -169,7 +171,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                                     NfcDataInfoBean(
                                                         code = FAIL,
                                                         msg = "传入扇区块异常."
-                                                    )
+                                                    ).toString()
                                                 )
                                             }, 500)
                                         }
@@ -180,7 +182,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                                 NfcDataInfoBean(
                                                     code = FAIL,
                                                     msg = "验证扇区密码错误."
-                                                )
+                                                ).toString()
                                             )
                                         }, 500)
                                     }
@@ -192,13 +194,22 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                         NfcDataInfoBean(
                                             code = FAIL,
                                             msg = "读卡器异常,请重试."
-                                        )
+                                        ).toString()
                                     )
                                 }, 500)
                             }
                         }
                     }
                 }
+            }
+            "incrementValue"->{
+                // FIXME:  待实现减值
+            }
+            "decrementValue"->{
+                // FIXME:  待实现加值
+            }
+            "readValue"->{
+                // FIXME:  读取临时块中的增量值
             }
             "stopNfcCard" -> {
                 NfcCardUtils.stopReaderMode(mActivityPluginBinding)
