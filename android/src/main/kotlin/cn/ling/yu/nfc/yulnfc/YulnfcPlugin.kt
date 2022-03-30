@@ -93,7 +93,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                                         code = SUCCESS,
                                                         content = blockDataHex,
                                                         uid = uid
-                                                    )
+                                                    ).toString()
                                                 )
                                             }, 500)
                                         } else {
@@ -103,7 +103,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                                     NfcDataInfoBean(
                                                         code = FAIL,
                                                         msg = "传入扇区块异常."
-                                                    )
+                                                    ).toString()
                                                 )
                                             }, 500)
                                         }
@@ -114,7 +114,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                                 NfcDataInfoBean(
                                                     code = FAIL,
                                                     msg = "验证扇区密码错误."
-                                                )
+                                                ).toString()
                                             )
                                         }, 500)
                                     }
@@ -126,7 +126,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                         NfcDataInfoBean(
                                             code = FAIL,
                                             msg = "读卡器异常,请重试."
-                                        )
+                                        ).toString()
                                     )
                                 }, 500)
                             }
