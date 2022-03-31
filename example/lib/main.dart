@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
                           .startWriteNfcSearch(0, 3, "1234567890")
                           .then((result) {
                         setState(() {
-                          nfcText = "写入成功,成功返回的内容=>$result";
+                          nfcText = result??"写入失败.";
                         });
                       });
                     },

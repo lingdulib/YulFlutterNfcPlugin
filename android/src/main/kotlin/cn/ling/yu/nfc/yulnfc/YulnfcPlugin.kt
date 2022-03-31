@@ -25,6 +25,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var channel: MethodChannel
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var mActivityPluginBinding: ActivityPluginBinding
+    private val TAG=YulnfcPlugin::class.java.name
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "yulnfc")
@@ -54,7 +55,7 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             "readNfcCard" -> {//读取某扇区内容
                 val requestParamters = call.arguments as Map<*, *>
                 NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
-                    val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
+                    val uid = ByteToConvertStringUtils.bytes2HexString(tag.id)
                     tag.techList.forEach { tech ->
                         if (TextUtils.equals(tech, MifareClassic::class.java.name)) {
                             val mfc = MifareClassic.get(tag)
@@ -75,10 +76,8 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                         if (blockIndex in 0 until blockSize) {
                                             val blockData = mfc.readBlock(blockIndex)
                                             val blockDataHex =
-                                                ByteToConvertStringUtils.bytesToHexString(
-                                                    blockData,
-                                                    blockData.size
-                                                )
+                                                ByteToConvertStringUtils.bytes2HexString(
+                                                    blockData)
                                             mfc.close()
                                             handler.postDelayed({
                                                 result.success(
@@ -139,9 +138,14 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
             "writeNfcCard" -> {
                 val requestParamters = call.arguments as Map<*, *>
-                Log.e("YulnfcPlugin","$requestParamters")
+                val byteArray= ByteToConvertStringUtils.convertStringTo16Bytes(
+                    requestParamters["writeContent"] as String?
+                )
+                val readBytes=ByteToConvertStringUtils.bytes2HexString(byteArray)
+                Log.e(TAG,byteArray.contentToString())
+                Log.e(TAG,"readContent===>$readBytes")
                 NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
-                    val uid = ByteToConvertStringUtils.bytesToHexString(tag.id, tag.id.size)
+                    val uid = ByteToConvertStringUtils.bytes2HexString(tag.id)
                     tag.techList.forEach { tech ->
                         if (TextUtils.equals(tech, MifareClassic::class.java.name)) {
                             val mfc = MifareClassic.get(tag)

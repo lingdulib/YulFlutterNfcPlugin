@@ -12,23 +12,17 @@ import kotlin.experimental.and
  */
 object ByteToConvertStringUtils {
 
-    fun bytesToHexString(src: ByteArray?, len: Int): String? {
-        val stringBuilder = StringBuilder("")
-        if (src == null || src.isEmpty()) {
-            return null
-        }
-        if (len <= 0) {
-            return ""
-        }
-        for (i in 0 until len) {
-            val v: Int = (src[i] and 0xFF.toByte()).toInt()
-            val hv = Integer.toHexString(v)
-            if (hv.length < 2) {
-                stringBuilder.append(0)
+    fun bytes2HexString(data: ByteArray?): String? {
+        if (data == null) return ""
+        val buffer = java.lang.StringBuilder()
+        for (b in data) {
+            val hex = Integer.toHexString((b.toInt() and 0xff))
+            if (hex.length == 1) {
+                buffer.append('0')
             }
-            stringBuilder.append(hv)
+            buffer.append(hex)
         }
-        return stringBuilder.toString()
+        return buffer.toString().uppercase(Locale.US)
     }
 
     fun isHexAnd16Byte(hexString: String): Boolean {
