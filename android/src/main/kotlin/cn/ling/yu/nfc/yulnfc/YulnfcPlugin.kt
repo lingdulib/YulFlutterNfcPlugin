@@ -61,7 +61,8 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                             mfc.connect()
                             try {
                                 val sectorCount = mfc.sectorCount
-                                if (sectorCount > 0) {
+                                val sectorIndex=requestParamters["sectorIndex"] as Int
+                                if (sectorIndex in 0 until sectorCount) {
                                     if (mfc.authenticateSectorWithKeyA(
                                             requestParamters["sectorIndex"] as Int,
                                             ByteToConvertStringUtils.hexStringToBytes(
@@ -110,6 +111,16 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                             )
                                         }, 500)
                                     }
+                                }else{
+                                    mfc.close()
+                                    handler.postDelayed({
+                                        result.success(
+                                            NfcDataInfoBean(
+                                                code = FAIL,
+                                                msg = "传入扇区异常."
+                                            ).toString()
+                                        )
+                                    }, 500)
                                 }
                             } catch (e: Exception) {
                                 mfc.close()
@@ -137,7 +148,8 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                             mfc.connect()
                             try {
                                 val sectorCount = mfc.sectorCount
-                                if (sectorCount > 0) {
+                                val sectorIndex=requestParamters["sectorIndex"] as Int
+                                if (sectorIndex in 0 until sectorCount) {
                                     if (mfc.authenticateSectorWithKeyA(
                                             requestParamters["sectorIndex"] as Int,
                                             ByteToConvertStringUtils.hexStringToBytes(
@@ -186,6 +198,16 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                                             )
                                         }, 500)
                                     }
+                                }else{
+                                    mfc.close()
+                                    handler.postDelayed({
+                                        result.success(
+                                            NfcDataInfoBean(
+                                                code = FAIL,
+                                                msg = "传入扇区异常."
+                                            ).toString()
+                                        )
+                                    }, 500)
                                 }
                             } catch (e: Exception) {
                                 mfc.close()
