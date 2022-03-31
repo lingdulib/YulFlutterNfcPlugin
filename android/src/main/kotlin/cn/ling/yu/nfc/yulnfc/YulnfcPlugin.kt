@@ -228,15 +228,6 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     }
                 }
             }
-            "incrementValue"->{
-                // FIXME:  待实现减值
-            }
-            "decrementValue"->{
-                // FIXME:  待实现加值
-            }
-            "readValue"->{
-                // FIXME:  读取临时块中的增量值
-            }
             "stopNfcCard" -> {
                 NfcCardUtils.stopReaderMode(mActivityPluginBinding)
                 result.success(null)
