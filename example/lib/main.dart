@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            yulnfc.startReadNfcSearch(0, 0).then((result) {
+            yulnfc.startReadNfcSearch(0, 3).then((result) {
               setState(() {
                 nfcText = result ?? "读取失败.";
                 print(nfcText);
