@@ -6,6 +6,11 @@
 
 1. 导入插件
 
+  ```yaml
+yulnfc:
+  git: https://github.com/lingdulib/YulFlutterNfcPlugin.git
+```
+
   ```dart
   import 'package:yulnfc/yulnfc.dart' as yulnfc;
   ```
@@ -13,7 +18,8 @@
 2. 检测设备是否支持NFC
 
 ```dart
- yulnfc.supportNfc.then((support) {
+ yulnfc.supportNfc.then((
+support) {
 if (support) {
 print("设备支持nfc");
 } else {
@@ -25,13 +31,14 @@ print("设备不支持nfc");
 3. 检测设备NFC是否可用
 
 ```dart
-  yulnfc.enableNfc.then((enable) {
-      if (enable) {
-        print("设备nfc可用");
-      } else {
-        print("设备nfc不可用");
-      }
-    });
+  yulnfc.enableNfc.then((
+enable) {
+if (enable) {
+print("设备nfc可用");
+} else {
+print("设备nfc不可用");
+}
+});
 ```
 
 4. 打开NFC设置
@@ -44,13 +51,19 @@ yulnfc.openNfcSetting;
 
 ```dart
 /// 参数1扇区 参数2区块 参数3 区块密码
-yulnfc.startReadNfcSearch(0, 0);
+yulnfc.startReadNfcSearch(0
+,
+0
+);
 ```
 
 6. 寻卡并写卡
 
 ```dart
-yulnfc.startWriteNfcSearch(0, 0);
+yulnfc.startWriteNfcSearch(0
+,
+0
+);
 ```
 
 7. 停止寻卡
@@ -59,8 +72,6 @@ yulnfc.startWriteNfcSearch(0, 0);
 yulnfc.stopNfcSearch();
 ```
 
-
-
 ### Android 端配置
 
 > Android 权限配置
@@ -68,6 +79,7 @@ yulnfc.stopNfcSearch();
 在AndroidManifest.xml添加
 
 ```xml
-<uses-permission android:name="android.permission.NFC"/>
+
+<uses-permission android:name="android.permission.NFC" />
 ```
 
