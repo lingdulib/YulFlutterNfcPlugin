@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
-import android.util.Log
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import cn.ling.yu.nfc.yulnfc.bean.NfcDataInfoBean
@@ -25,7 +24,6 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private lateinit var channel: MethodChannel
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var mActivityPluginBinding: ActivityPluginBinding
-    private val TAG=YulnfcPlugin::class.java.name
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "yulnfc")
@@ -138,12 +136,6 @@ class YulnfcPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             }
             "writeNfcCard" -> {
                 val requestParamters = call.arguments as Map<*, *>
-                val byteArray= ByteToConvertStringUtils.convertStringTo16Bytes(
-                    requestParamters["writeContent"] as String?
-                )
-                val readBytes=ByteToConvertStringUtils.bytes2HexString(byteArray)
-                Log.e(TAG,byteArray.contentToString())
-                Log.e(TAG,"readContent===>$readBytes")
                 NfcCardUtils.startReaderMode(mActivityPluginBinding) { tag ->
                     val uid = ByteToConvertStringUtils.bytes2HexString(tag.id)
                     tag.techList.forEach { tech ->
