@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
                           .startWriteNfcSearch(0, 3, "1234567890")
                           .then((result) {
                         setState(() {
-                          nfcText = result??"写入失败.";
+                          nfcText = result;
                         });
                       });
                     },
@@ -68,7 +68,9 @@ class _MyAppState extends State<MyApp> {
                 TextButton(onPressed: (){
 
                 }, child:const Text("写值+10")),
-                TextButton(onPressed: (){},child: const Text("减值-10"),)
+                TextButton(onPressed: (){
+
+                },child: const Text("减值-10"),)
               ]
             ],
           ),
@@ -77,7 +79,7 @@ class _MyAppState extends State<MyApp> {
           onPressed: () {
             yulnfc.startReadNfcSearch(0, 3).then((result) {
               setState(() {
-                nfcText = result ?? "读取失败.";
+                nfcText = result;
                 print(nfcText);
                 Map<String, dynamic> map = jsonDecode(nfcText);
                 print("map1====>${map["uid"]}");

@@ -83,3 +83,19 @@ yulnfc.stopNfcSearch();
 <uses-permission android:name="android.permission.NFC" />
 ```
 
+> ios 配置
+
+```text
+Use NFCTagReaderSession to interact with one of the tag types listed in NFCTagType. To use this reader session, you must:
+
+Include the Near Field Communication Tag Reader Session Formats Entitlement in your app.
+
+Provide a non-empty string for the NFCReaderUsageDescription key in your app’s info.plist file.
+
+To interact with ISO 7816 tags, add the list of the application identifiers supported in your app to the com.apple.developer.nfc.readersession.iso7816.select-identifiers information property list key. If you include the application identifier D2760000850101—the identifier for the NDEF application on MIFARE DESFire tags (NFC Forum T4T tag platform)—and the reader session finds a tag matching this identifier, it sends the delegate an NFCISO7816Tag tag object. To get the MIFARE DESFire tag as an NFCMiFareTag object, don't include D2760000850101 in the application identifier list.
+
+Only one reader session of any type can be active in the system at a time. The system puts additional sessions in a queue and processes them in first-in, first-out (FIFO) order.
+```
+
+来自：https://developer.apple.com/documentation/corenfc/nfctagreadersession/
+

@@ -22,7 +22,7 @@ object ByteToConvertStringUtils {
             }
             buffer.append(hex)
         }
-        return buffer.toString().uppercase(Locale.US)
+        return buffer.toString()
     }
 
     fun isHexAnd16Byte(hexString: String): Boolean {
@@ -30,13 +30,13 @@ object ByteToConvertStringUtils {
     }
 
     fun hexStringToBytes(hexString: String?): ByteArray? {
-        var hexTempString = hexString
-        if (hexTempString == null || hexTempString == "") {
+       // val hexTempString = hexString
+        if (hexString == null || hexString == "") {
             return null
         }
-        hexTempString = hexTempString.uppercase(Locale.getDefault())
-        val length = hexTempString.length / 2
-        val hexChars = hexTempString.toCharArray()
+        //hexTempString = hexTempString.uppercase(Locale.getDefault())
+        val length = hexString.length / 2
+        val hexChars = hexString.toCharArray()
         val d = ByteArray(length)
         for (i in 0 until length) {
             val pos = i * 2
