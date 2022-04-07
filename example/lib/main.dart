@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:yulnfc/bean/NfcError.dart';
+import 'package:yulnfc/bean/NfcTag.dart';
 import 'package:yulnfc/yulnfc.dart' as yulnfc;
 import 'dart:convert';
 
@@ -20,6 +22,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    yulnfc.initHandlerForIos();
     yulnfc.supportNfc.then((support) {
       if (support) {
         print("设备支持nfc");
@@ -66,7 +69,11 @@ class _MyAppState extends State<MyApp> {
                     },
                     child: const Text("写卡")),
                 TextButton(onPressed: (){
+                  yulnfc.startSessionForIos(onDiscovered: (NfcTag tag) async {
 
+                  },onError: (NfcError error) async {
+
+                  });
                 }, child:const Text("写值+10")),
                 TextButton(onPressed: (){
 

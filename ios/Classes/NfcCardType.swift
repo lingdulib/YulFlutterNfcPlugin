@@ -4,9 +4,12 @@ import CoreNFC
 func getPollingOption() -> NFCTagReaderSession.PollingOption {
   var option = NFCTagReaderSession.PollingOption()
   option.insert(NFCTagReaderSession.PollingOption.iso14443) //检测mifare标签
+  option.insert(NFCTagReaderSession.PollingOption.iso15693)
+  option.insert(NFCTagReaderSession.PollingOption.iso18092)
   return option
 }
 
+//获取寻卡参数
 @available(iOS 13.0, *)
 func getRequestFlags(_ arg: [String]) -> RequestFlag {
   var flag = RequestFlag()
@@ -21,7 +24,6 @@ func getRequestFlags(_ arg: [String]) -> RequestFlag {
 
 @available(iOS 11.0, *)
 func getErrorTypeString(_ arg: NFCReaderError.Code) -> String? {
-  // TODO: add more cases
   switch arg {
   case .readerSessionInvalidationErrorSessionTimeout: return "sessionTimeout"
   case .readerSessionInvalidationErrorSystemIsBusy: return "systemIsBusy"
@@ -42,6 +44,7 @@ func getNDEFMessage(_ arg: [String : Any?]) -> NFCNDEFMessage {
   })
 }
 
+//获取ndef数据信息
 @available(iOS 11.0, *)
 func getNDEFMessageMap(_ arg: NFCNDEFMessage) -> [String : Any?] {
   return ["records": arg.records.map {
@@ -54,10 +57,10 @@ func getNDEFMessageMap(_ arg: NFCNDEFMessage) -> [String : Any?] {
   }]
 }
 
+//获取nfc标签字典
 @available(iOS 13.0, *)
 func getNFCTagMapAsync(_ arg: NFCTag, _ completionHandler: @escaping (NFCNDEFTag, [String:Any?], Error?) -> Void) {
   switch (arg) {
-  case .feliCa(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
   case .miFare(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
   case .iso7816(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
   case .iso15693(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
@@ -68,31 +71,24 @@ func getNFCTagMapAsync(_ arg: NFCTag, _ completionHandler: @escaping (NFCNDEFTag
 @available(iOS 13.0, *)
 func getNDEFTagMapAsync(_ arg: NFCNDEFTag, _ completionHandler: @escaping ([String : Any?], Error?) -> Void) {
   var data = getNDEFTagMap(arg)
-
   arg.queryNDEFStatus { status, capacity, error in
     if let error = error {
       completionHandler(data, error)
       return
     }
-
     if status == .notSupported {
       completionHandler(data, nil)
       return
     }
-
     var ndefData: [String : Any?] = [
       "isWritable": (status == .readWrite),
-      "maxSize": capacity,
+      "maxSize": capacity
     ]
-
     arg.readNDEF { message, _ in
-
       if let message = message {
         ndefData["cachedMessage"] = getNDEFMessageMap(message)
       }
-
       data["ndef"] = ndefData
-
       completionHandler(data, nil)
     }
   }
@@ -100,21 +96,14 @@ func getNDEFTagMapAsync(_ arg: NFCNDEFTag, _ completionHandler: @escaping ([Stri
 
 @available(iOS 13.0, *)
 func getNDEFTagMap(_ arg: NFCNDEFTag) -> [String : [String : Any?]] {
-  if let arg = arg as? NFCFeliCaTag {
-    return [
-      "felica": [
-        "currentIDm": arg.currentIDm,
-        "currentSystemCode": arg.currentSystemCode
-      ]
-    ]
-  } else if let arg = arg as? NFCISO15693Tag {
-    return [
-      "iso15693": [
-        "icManufacturerCode": arg.icManufacturerCode,
-        "icSerialNumber": arg.icSerialNumber,
-        "identifier": arg.identifier
-      ]
-    ]
+    if let arg = arg as? NFCISO15693Tag {
+         return [
+            "iso15693": [
+                "icManufacturerCode": arg.icManufacturerCode,
+                "icSerialNumber": arg.icSerialNumber,
+                "identifier": arg.identifier
+            ]
+         ]
   } else if let arg = arg as? NFCISO7816Tag {
     return [
       "iso7816": [
