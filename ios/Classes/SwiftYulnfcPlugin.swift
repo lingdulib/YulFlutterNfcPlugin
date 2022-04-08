@@ -48,7 +48,7 @@ public class SwiftYulnfcPlugin: NSObject, FlutterPlugin {
            case "sendMiFareCommand": handleMiFareSendMiFareCommand(call.arguments as! [String : Any?], result: result)
            case "sendMiFareIso7816Command": handleMiFareSendMiFareIso7816Command(call.arguments as! [String : Any?], result: result)
            case "sendMiFareIso7816CommandRaw": handleMiFareSendMiFareIso7816CommandRaw(call.arguments as! [String : Any?], result: result)
-           default: result(FlutterMethodNotImplemented)
+           default: result(nil)
        }
   }
 
@@ -125,6 +125,7 @@ public class SwiftYulnfcPlugin: NSObject, FlutterPlugin {
     //通用
      @available(iOS 13.0, *)
      private func tagHandler<T>(_ dump: T.Type, _ arguments: [String : Any?], _ result: FlutterResult, callback: ((T) -> Void)) {
+        //获取nfc tag实例
         if let tag = tags[arguments["handle"] as! String] as? T {
             callback(tag)
         } else {
@@ -342,6 +343,28 @@ public class SwiftYulnfcPlugin: NSObject, FlutterPlugin {
             }
         }
 
+        @available(iOS 13.0, *)
+        private func handleMiFareSendMiFareIso7816CommandRaw(_ arguments: [String : Any?], result: @escaping FlutterResult) {
+            tagHandler(NFCMiFareTag.self, arguments, result) { tag in
+              guard let apdu = NFCISO7816APDU(data: (arguments["data"] as! FlutterStandardTypedData).data) else {
+                result(FlutterError(code: "invalid_parameter", message: nil, details: nil))
+                return
+              }
+              tag.sendMiFareISO7816Command(apdu) { payload, statusWord1, statusWord2, error in
+                if let error = error {
+                  result(getFlutterError(error))
+                } else {
+                  result([
+                    "payload": payload,
+                    "statusWord1": statusWord1,
+                    "statusWord2": statusWord2,
+                  ])
+                }
+              }
+            }
+        }
+
+
 }
 
 @available(iOS 13.0, *)
@@ -355,22 +378,21 @@ extension SwiftYulnfcPlugin: NFCTagReaderSessionDelegate {
   }
 
   public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
-   ///读取到nfc标签
+    //获取nfc标签实例
     let handle = NSUUID().uuidString
     session.connect(to: tags.first!) { error in
       if let error = error {
 //         // skip tag detection
-//         print(error)
         return
       }
       getNFCTagMapAsync(tags.first!) { tag, data, error in
         if let error = error {
 //           // skip tag detection
-//           print(error)
           return
         }
         self.tags[handle] = tag
-        self.channel.invokeMethod("onDiscovered", arguments: data.merging(["handle": handle]) { cur, _ in cur })
+        //将键值添加到数据字典中 并保持当前值 {current,new in current} 替换当前值{current,new in new},存在相同key下
+        self.channel.invokeMethod("onDiscovered", arguments: data.merging(["handle": handle]) { (current, _) in current })
       }
     }
   }

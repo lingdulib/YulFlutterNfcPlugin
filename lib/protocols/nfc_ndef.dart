@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 
 import '../bean/NdefMessage.dart';
 import '../bean/NfcTag.dart';
-import '../utils/IosTranslator.dart';
+import '../utils/IsoTranslator.dart';
 
 /// The class provides access to NDEF operations on the tag.
 ///
@@ -24,13 +24,13 @@ class Ndef {
   // _tag
   final NfcTag _tag;
 
-  /// The value from Ndef#isWritable on Android, NFCNDEFTag#queryStatus on iOS.
+  /// The value from isWritable on Android, NFCNDEFTag#queryStatus on iOS.
   final bool isWritable;
 
-  /// The value from Ndef#maxSize on Android, NFCNDEFTag#queryStatus on iOS.
+  /// The value from maxSize on Android, NFCNDEFTag#queryStatus on iOS.
   final int maxSize;
 
-  /// The value from Ndef#cachedNdefMessage on Android, NFCNDEFTag#read on iOS.
+  /// The value from cachedNdefMessage on Android, NFCNDEFTag#read on iOS.
   ///
   /// This value is cached at tag discovery.
   final NdefMessage? cachedMessage;
@@ -61,14 +61,6 @@ class Ndef {
     });
   }
 
-  /// Change the NDEF status to read-only.
-  ///
-  /// This is a permanent action that you cannot undo. After locking the tag, you can no longer write data to it.
-  Future<void> writeLock() async {
-    return methodChannel.invokeMethod('writeLock', {
-      'handle': _tag.handle,
-    });
-  }
 }
 
 Ndef? _getNdef(NfcTag arg, MethodChannel methodChannel) {

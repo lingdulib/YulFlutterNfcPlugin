@@ -11,7 +11,7 @@ func getPollingOption() -> NFCTagReaderSession.PollingOption {
 
 //获取寻卡参数
 @available(iOS 13.0, *)
-func getRequestFlags(_ arg: [String]) -> RequestFlag {
+func getRequestFlags(_ arg: [String]) -> RequestFlag { //iso15693
   var flag = RequestFlag()
   if arg.contains("address") { flag.insert(RequestFlag.address) }
   if arg.contains("dualSubCarriers") { flag.insert(RequestFlag.dualSubCarriers) }
@@ -69,7 +69,7 @@ func getNFCTagMapAsync(_ arg: NFCTag, _ completionHandler: @escaping (NFCNDEFTag
 }
 
 @available(iOS 13.0, *)
-func getNDEFTagMapAsync(_ arg: NFCNDEFTag, _ completionHandler: @escaping ([String : Any?], Error?) -> Void) {
+func getNDEFTagMapAsync(_ arg: NFCNDEFTag, _ completionHandler: @escaping ([String : Any?], Error?) -> Void) {//获取ndef信息到map
   var data = getNDEFTagMap(arg)
   arg.queryNDEFStatus { status, capacity, error in
     if let error = error {
@@ -114,7 +114,7 @@ func getNDEFTagMap(_ arg: NFCNDEFTag) -> [String : [String : Any?]] {
         "proprietaryApplicationDataCoding": arg.proprietaryApplicationDataCoding
       ]
     ]
-  } else if let arg = arg as? NFCMiFareTag {
+  } else if let arg = arg as? NFCMiFareTag {//mifare class 1k 支持
     return [
       "mifare": [
         "historicalBytes": arg.historicalBytes,

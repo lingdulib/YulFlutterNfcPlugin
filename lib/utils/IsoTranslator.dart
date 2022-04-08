@@ -8,7 +8,6 @@ import '../bean/NfcErrorType.dart';
 import '../bean/NfcTag.dart';
 import '../protocols/iso15693.dart';
 import '../protocols/iso7816.dart';
-import '../protocols/mifare.dart';
 
 const Map<NfcErrorType, String> nfcErrorTypeTable = {
   NfcErrorType.sessionTimeout: 'sessionTimeout',

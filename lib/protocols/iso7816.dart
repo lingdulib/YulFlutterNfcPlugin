@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 
 import '../bean/NfcTag.dart';
-import '../utils/IosTranslator.dart';
+import '../utils/IsoTranslator.dart';
 
 /// The class provides access to NFCISO7816Tag API for iOS.
 ///
@@ -26,19 +26,19 @@ class Iso7816 {
   // _tag
   final NfcTag _tag;
 
-  /// The value from NFCISO7816Tag#identifier on iOS.
+  /// The value from identifier on iOS.
   final Uint8List identifier;
 
-  /// The value from NFCISO7816Tag#initialSelectedAID on iOS.
+  /// The value from initialSelectedAID on iOS.
   final String initialSelectedAID;
 
-  /// The value from NFCISO7816Tag#historicalBytes on iOS.
+  /// The value from historicalBytes on iOS.
   final Uint8List? historicalBytes;
 
-  /// The value from NFCISO7816Tag#applicationData on iOS.
+  /// The value from applicationData on iOS.
   final Uint8List? applicationData;
 
-  /// The value from NFCISO7816Tag#proprietaryApplicationDataCoding on iOS.
+  /// The value from proprietaryApplicationDataCoding on iOS.
   final bool proprietaryApplicationDataCoding;
 
   final MethodChannel methodChannel;
@@ -50,7 +50,7 @@ class Iso7816 {
 
   /// Sends the APDU to the tag.
   ///
-  /// This uses NFCISO7816Tag#sendCommand API on iOS.
+  /// This uses sendCommand API on iOS.
   Future<Iso7816ResponseApdu> sendCommand({
     required int instructionClass,
     required int instructionCode,
@@ -72,7 +72,7 @@ class Iso7816 {
 
   /// Sends the APDU to the tag.
   ///
-  /// This uses NFCISO7816Tag#sendCommand API on iOS.
+  /// This uses sendCommand API on iOS.
   Future<Iso7816ResponseApdu> sendCommandRaw(Uint8List data) async {
     return methodChannel.invokeMethod('sendCommandRaw', {
       'handle': _tag.handle,

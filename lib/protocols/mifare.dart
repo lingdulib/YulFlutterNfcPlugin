@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import '../bean/NfcTag.dart';
 import './iso7816.dart';
 import '../bean/MiFareFamily.dart';
-import '../utils/IosTranslator.dart';
+import '../utils/IsoTranslator.dart';
 
 /// The class provides access to NFCMiFareTag API for iOS.
 ///
@@ -26,13 +26,13 @@ class MiFare {
   // _tag
   final NfcTag _tag;
 
-  /// The value from NFCMiFareTag#mifareFamily on iOS.
+  /// The value from mifareFamily on iOS.
   final MiFareFamily mifareFamily;
 
-  /// The value from NFCMiFareTag#identifier on iOS.
+  /// The value from identifier on iOS.
   final Uint8List identifier;
 
-  /// The value from NFCMiFareTag#historicalBytes on iOS.
+  /// The value from historicalBytes on iOS.
   final Uint8List? historicalBytes;
 
   final MethodChannel methodChannel;
@@ -45,7 +45,7 @@ class MiFare {
 
   /// Sends the native MiFare command to the tag.
   ///
-  /// This uses NFCMiFareTag#sendMiFareCommand API on iOS.
+  /// This uses sendMiFareCommand API on iOS.
   Future<Uint8List> sendMiFareCommand(Uint8List commandPacket) async {
     return methodChannel.invokeMethod('sendMiFareCommand', {
       'handle': _tag.handle,
@@ -55,7 +55,7 @@ class MiFare {
 
   /// Sends the ISO7816 APDU to the tag.
   ///
-  /// This uses NFCMiFareTag#sendMiFareISO7816Command API on iOS.
+  /// This uses sendMiFareISO7816Command API on iOS.
   Future<Iso7816ResponseApdu> sendMiFareIso7816Command({
     required int instructionClass,
     required int instructionCode,
@@ -77,7 +77,7 @@ class MiFare {
 
   /// Sends the ISO7816 APDU to the tag.
   ///
-  /// This uses NFCMiFareTag#sendMiFareISO7816Command API on iOS.
+  /// This uses sendMiFareISO7816Command API on iOS.
   Future<Iso7816ResponseApdu> sendMiFareIso7816CommandRaw(
       Uint8List data) async {
     return methodChannel.invokeMethod('sendMiFareIso7816CommandRaw', {

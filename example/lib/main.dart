@@ -1,8 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:yulnfc/bean/NdefMessage.dart';
 import 'package:yulnfc/bean/NfcError.dart';
 import 'package:yulnfc/bean/NfcTag.dart';
+import 'package:yulnfc/protocols/mifare.dart';
+import 'package:yulnfc/protocols/nfc_ndef.dart';
 import 'package:yulnfc/yulnfc.dart' as yulnfc;
 import 'dart:convert';
+import 'package:flutter/services.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,15 +75,65 @@ class _MyAppState extends State<MyApp> {
                     },
                     child: const Text("写卡")),
                 TextButton(onPressed: (){
-                  yulnfc.startSessionForIos(onDiscovered: (NfcTag tag) async {
-
+                  yulnfc.startSessionForIos(onDiscovered: (NfcTag tag,MethodChannel channel) async {
+                     setState(() {
+                        nfcText=tag.data.toString();
+                        yulnfc.stopSessionForIos();
+                     });
                   },onError: (NfcError error) async {
-
+                       print("nfcErrorMessage:${error.message}");
+                       yulnfc.stopSessionForIos();
                   });
-                }, child:const Text("写值+10")),
+                }, child:const Text("建立ios nfc tag连接")),
                 TextButton(onPressed: (){
+                  yulnfc.startSessionForIos(onDiscovered: (NfcTag tag,MethodChannel channel) async {
+                      var ndef=Ndef.from(tag, channel);
+                      ndef?.read().then((ndefMessage){
+                          print("信息读取成功.");
+                      });
+                  },onError: (NfcError error) async {
+                    print("nfcErrorMessage:${error.message}");
+                    yulnfc.stopSessionForIos();
+                  });
+                },child: const Text("读取ios nfc tag"),),
+                TextButton(onPressed: (){
+                   yulnfc.startSessionForIos(onDiscovered:(NfcTag tag,MethodChannel channel) async {
+                     var ndef = Ndef.from(tag,channel);
+                     if (ndef == null || !ndef.isWritable) {
+                       print("nfc tag not write");
+                       yulnfc.stopSessionForIos(errorMessage: "nfc tag 不能写入ndef数据.");
+                       return;
+                     }
+                     NdefMessage message = NdefMessage([
+                       NdefRecord.createText('Test a nfc Tag'),
+                       NdefRecord.createUri(Uri.parse('http://127.0.0.1:9101')),
+                       NdefRecord.createMime(
+                           'text/plain', Uint8List.fromList('testText'.codeUnits)),
+                       NdefRecord.createExternal(
+                           'com.demo', 'text/plain', Uint8List.fromList('myNfcData'.codeUnits)),
+                     ]);
 
-                },child: const Text("减值-10"),)
+                     try {
+                       await ndef.write(message);
+                       print("nfc tag 写入ndef数据成功.");
+                       yulnfc.stopSessionForIos();
+                     } catch (e) {
+                       yulnfc.stopSessionForIos(errorMessage: e.toString());
+                       return;
+                     }
+                   },onError: (NfcError error) async{
+                      print("nfcErrorMessage:${error.message}");
+                      yulnfc.stopSessionForIos();
+                   });
+                }, child: const Text("写入ios nfc tag ndef 数据")),
+                TextButton(onPressed: (){
+                    yulnfc.startSessionForIos(onDiscovered: (NfcTag tag,MethodChannel channel) async {
+                      var mifare=MiFare.from(tag, channel);
+
+                    },onError: (NfcError error) async{
+
+                    });
+                }, child: const Text("ios m1 卡")),
               ]
             ],
           ),

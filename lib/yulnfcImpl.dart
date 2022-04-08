@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'bean/NfcError.dart';
 import 'bean/NfcTag.dart';
-import 'utils/IosTranslator.dart';
+import 'utils/IsoTranslator.dart';
 
 /// 实现类
 /// Signature for `startSession` onDiscovered callback.
-typedef NfcTagCallback = Future<void> Function(NfcTag tag);
+typedef NfcTagCallback = Future<void> Function(NfcTag tag,MethodChannel methodChannel);
 
 /// Signature for `startSession` onError callback.
 typedef NfcErrorCallback = Future<void> Function(NfcError error);
@@ -91,7 +91,7 @@ Future<void> _handleMethodCall(MethodCall call) async {
 
 _handleOnDiscovered(MethodCall methodCall) async {
   final tag = getNfcTag(Map.from(methodCall.arguments));
-  await _onDiscovered?.call(tag);
+  await _onDiscovered?.call(tag,_channel);
   await _disposeTagForIos(tag.handle);
 }
 
@@ -131,3 +131,6 @@ Future<void> stopSessionForIos({
 Future<void> _disposeTagForIos(String handle) async => _channel.invokeMethod('disposeTag', {
   'handle': handle,
 });
+
+//ios 读取ndef标签
+
