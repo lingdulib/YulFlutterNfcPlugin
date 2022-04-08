@@ -132,5 +132,3 @@ Future<void> _disposeTagForIos(String handle) async => _channel.invokeMethod('di
   'handle': handle,
 });
 
-//ios 读取ndef标签
-
