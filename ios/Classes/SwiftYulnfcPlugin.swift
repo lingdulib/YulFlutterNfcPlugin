@@ -305,20 +305,6 @@ public class SwiftYulnfcPlugin: NSObject, FlutterPlugin {
          }
 
          @available(iOS 13.0, *)
-         private func handleMiFareSendMiFareCommand(_ arguments: [String : Any?], result: @escaping FlutterResult) {
-            tagHandler(NFCMiFareTag.self, arguments, result) { tag in
-              let commandPacket = (arguments["commandPacket"] as! FlutterStandardTypedData).data
-              tag.sendMiFareCommand(commandPacket: commandPacket) { data, error in
-                if let error = error {
-                  result(getFlutterError(error))
-                } else {
-                  result(data)
-                }
-              }
-            }
-         }
-
-         @available(iOS 13.0, *)
          private func handleMiFareSendMiFareIso7816Command(_ arguments: [String : Any?], result: @escaping FlutterResult) {
             tagHandler(NFCMiFareTag.self, arguments, result) { tag in
               let apdu = NFCISO7816APDU(
@@ -381,12 +367,12 @@ extension SwiftYulnfcPlugin: NFCTagReaderSessionDelegate {
     //获取nfc标签实例
     let handle = NSUUID().uuidString
     session.connect(to: tags.first!) { error in
-      if let error = error {
+        if error != nil {
 //         // skip tag detection
         return
       }
       getNFCTagMapAsync(tags.first!) { tag, data, error in
-        if let error = error {
+          if error != nil {
 //           // skip tag detection
           return
         }

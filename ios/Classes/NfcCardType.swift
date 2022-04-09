@@ -64,6 +64,8 @@ func getNFCTagMapAsync(_ arg: NFCTag, _ completionHandler: @escaping (NFCNDEFTag
   case .miFare(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
   case .iso7816(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
   case .iso15693(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
+  case .feliCa(let tag): getNDEFTagMapAsync(tag){ data,error in completionHandler(tag,data,error)
+  }
   @unknown default: print("Unknown tag cannot be serialized")
   }
 }
